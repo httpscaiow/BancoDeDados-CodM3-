@@ -1,37 +1,26 @@
-from mysql.connector import Error
-import mysql.connector
+import sqlite3
 import time
 
-'''
-    Prof, na conexeão com o banco de dados, caso necessário, você pode alterar o nome do usuário, 
-    senha e banco de dados. Porém não consegui rodar o código direito, o MySQL estava dando uns erros e eu não consegui resolver.
-'''
-conn = None  # Initialize conn to None
-try:
-    conn = mysql.connector.connect(
-        host='127.0.0.1',
-        port=3306,
-        user='root',
-        password='vicky1478!MS',
-        database='farmauni'
-    )
-    if conn.is_connected():
+def criar_conexao(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
         print("Conexão bem-sucedida!")
-except Error as e:
-    print(f"Erro ao conectar ao banco de dados: {e}")
+    except sqlite3.Error as e:
+        print(f"Erro ao conectar ao banco de dados: {e}")
+    return conn
 
-cursor = conn.cursor(dictionary=True)
+def fechar_conexao(conn):
+    if conn:
+        conn.close()
+        print("Conexão fechada.")
 
-'''
-    O menu foi feito de forma mais extensiva para facilitar a criação do código e tabém foi utilizado
-    time.sleep para melhor visualização do menu.
-'''
-def menu():
+def menu(conn):
     while True:
         print("\n--- Menu Funcionario ---")
         print("01. Inserir Funcionário")
         print("02. Consultar um Funcionário")
-        print("03. Listar funcionario")
+        print("03. Listar Funcionários")
         print("04. Atualizar Funcionário")
         print("05. Deletar Funcionário")
 
@@ -41,16 +30,16 @@ def menu():
         print("06. Inserir Medicamento")
         print("07. Consultar um Medicamento")
         print("08. Listar Medicamentos")
-        print("09. Atualizar estoque Medicamento")
+        print("09. Atualizar Estoque Medicamento")
         print("10. Deletar Medicamento")
 
         time.sleep(1)
 
         print("\n--- Menu Entrega ---")
-        print("11. Gerar registro de Entrega")
+        print("11. Gerar Registro de Entrega")
         print("12. Consultar Entrega")
         print("13. Listar Entregas")
-        print("14. Atualizar status de Entrega")
+        print("14. Atualizar Status de Entrega")
         print("15. Deletar Entrega")
         
         time.sleep(1)
@@ -66,101 +55,47 @@ def menu():
 
         opcao = input("Escolha uma opção: ")
         if opcao == "1":
-            inserir_funcionario()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            inserir_funcionario(conn)
         elif opcao == "2":
-            consultar_funcionarios()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            consultar_funcionarios(conn)
         elif opcao == "3":
-            listar_funcionarios()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            listar_funcionarios(conn)
         elif opcao == "4":
-            atualizar_funcionario()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            atualizar_funcionario(conn)
         elif opcao == "5":
-            deletar_funcionario()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            deletar_funcionario(conn)
         elif opcao == "6":
-            inserir_medicamento()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            inserir_medicamento(conn)
         elif opcao == "7":
-            consultar_medicamento()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            consultar_medicamento(conn)
         elif opcao == "8":
-            listar_medicamentos()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            listar_medicamentos(conn)
         elif opcao == "9":
-            atualizar_estoque_medicamento()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            atualizar_estoque_medicamento(conn)
         elif opcao == "10":
-            deletar_medicamento()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            deletar_medicamento(conn)
         elif opcao == "11":
-            inserir_entrega_medicamentos()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            inserir_entrega_medicamentos(conn)
         elif opcao == "12":
-            consultar_entrega()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            consultar_entrega(conn)
         elif opcao == "13":
-            listar_entregas()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            listar_entregas(conn)
         elif opcao == "14":
-            atualizar_status_entrega()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            atualizar_status_entrega(conn)
         elif opcao == "15":
-            deletar_entrega()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
+            deletar_entrega(conn)
         elif opcao == "16":
-            inserir_unidade()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()
-        elif opcao == "17": 
-            listar_unidades()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu() 
+            inserir_unidade(conn)
+        elif opcao == "17":
+            listar_unidades(conn)
         elif opcao == "18":
-            deletar_unidade()
-            print("\n Você está sendo redirecionado para o menu principal...")
-            time.sleep(2)
-            menu()  
+            deletar_unidade(conn)
         elif opcao == "0":
             print("Saindo do sistema...")
             time.sleep(1)
             break
-            
-def inserir_funcionario(): 
+
+def inserir_funcionario(conn):
     cursor = conn.cursor()
     print("\n-- Inserir Funcionário --")
 
@@ -177,7 +112,7 @@ def inserir_funcionario():
         INSERT INTO Funcionario (
             nome, cargo, salario, cpf, email_interno, numero_telefone, data_nascimento, unidade_de_trabalho
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     dados = (nome, cargo, salario, cpf, email, telefone, nascimento, unidade)
@@ -191,15 +126,13 @@ def inserir_funcionario():
     
     cursor.close()
 
-
-def consultar_funcionarios():
+def consultar_funcionarios(conn):
     cursor = conn.cursor()
-    
     print("\n-- Consultar Funcionário --")
     codigo = int(input("ID do funcionário a ser consultado: "))
-    sql = "SELECT * FROM Funcionario WHERE codigo_funcionario = %s"
+    sql = "SELECT * FROM Funcionario WHERE codigo_funcionario = ?"
     cursor.execute(sql, (codigo,))
-    resultado = cursor.fetchone()  
+    resultado = cursor.fetchone()
 
     if resultado:
         print("\nInformações do Funcionário:")
@@ -217,7 +150,7 @@ def consultar_funcionarios():
 
     cursor.close()
 
-def listar_funcionarios():
+def listar_funcionarios(conn):
     cursor = conn.cursor()
     print("\n-- Listar Funcionários --")
     sql = "SELECT * FROM Funcionario"
@@ -239,74 +172,67 @@ def listar_funcionarios():
 
     cursor.close()
 
-def atualizar_funcionario():
+def atualizar_funcionario(conn):
+    cursor = conn.cursor()
     print("\n-- Atualizar Funcionário --")
     
-    try:
-        codigo = int(input("Digite o código do funcionário a ser atualizado: "))
-        sql = "SELECT * FROM Funcionario WHERE codigo_funcionario = %s"
-        cursor.execute(sql, (codigo,))
-        funcionario = cursor.fetchone()
+    codigo = int(input("Digite o código do funcionário a ser atualizado: "))
+    sql = "SELECT * FROM Funcionario WHERE codigo_funcionario = ?"
+    cursor.execute(sql, (codigo,))
+    funcionario = cursor.fetchone()
 
-        if not funcionario:
-            print("Funcionário não encontrado.")
-            return
+    if not funcionario:
+        print("Funcionário não encontrado.")
+        return
 
-        print("\nFuncionário atual:")
-        print(f"Nome: {funcionario['nome']}")
-        print(f"Cargo: {funcionario['cargo']}")
-        print(f"Salário: {funcionario['salario']:.2f}")
-        print(f"CPF: {funcionario['cpf']}")
-        print(f"Email: {funcionario['email_interno']}")
-        print(f"Telefone: {funcionario['numero_telefone']}")
-        print(f"Nascimento: {funcionario['data_nascimento']}")
-        print(f"Unidade: {funcionario['unidade_de_trabalho']}")
+    print("\nFuncionário atual:")
+    print(f"Nome: {funcionario[1]}")
+    print(f"Cargo: {funcionario[2]}")
+    print(f"Salário: {funcionario[3]:.2f}")
+    print(f"CPF: {funcionario[4]}")
+    print(f"Email: {funcionario[5]}")
+    print(f"Telefone: {funcionario[6]}")
+    print(f"Nascimento: {funcionario[7]}")
+    print(f"Unidade: {funcionario[8]}")
 
-        nome = input(f"Novo nome (ENTER para manter '{funcionario['nome']}'): ") or funcionario['nome']
-        cargo = input(f"Novo cargo (ENTER para manter '{funcionario['cargo']}'): ") or funcionario['cargo']
+    nome = input(f"Novo nome (ENTER para manter '{funcionario[1]}'): ") or funcionario[1]
+    cargo = input(f"Novo cargo (ENTER para manter '{funcionario[2]}'): ") or funcionario[2]
 
-        salario_input = input(f"Novo salário (ENTER para manter '{funcionario['salario']}'): ")
-        salario = float(salario_input) if salario_input else funcionario['salario']
+    salario_input = input(f"Novo salário (ENTER para manter '{funcionario[3]}'): ")
+    salario = float(salario_input) if salario_input else funcionario[3]
 
-        cpf = input(f"Novo CPF (ENTER para manter '{funcionario['cpf']}'): ") or funcionario['cpf']
-        email = input(f"Novo email interno (ENTER para manter '{funcionario['email_interno']}'): ") or funcionario['email_interno']
-        telefone = input(f"Novo telefone (ENTER para manter '{funcionario['numero_telefone']}'): ") or funcionario['numero_telefone']
-        nascimento = input(f"Nova data de nascimento (YYYY-MM-DD, ENTER para manter '{funcionario['data_nascimento']}'): ") or funcionario['data_nascimento']
+    cpf = input(f"Novo CPF (ENTER para manter '{funcionario[4]}'): ") or funcionario[4]
+    email = input(f"Novo email interno (ENTER para manter '{funcionario[5]}'): ") or funcionario[5]
+    telefone = input(f"Novo telefone (ENTER para manter '{funcionario[6]}'): ") or funcionario[6]
+    nascimento = input(f"Nova data de nascimento (YYYY-MM-DD, ENTER para manter '{funcionario[7]}'): ") or funcionario[7]
 
-        unidade_input = input(f"Nova unidade (ENTER para manter '{funcionario['unidade_de_trabalho']}'): ")
-        unidade = int(unidade_input) if unidade_input else funcionario['unidade_de_trabalho']
+    unidade_input = input(f"Nova unidade (ENTER para manter '{funcionario[8]}'): ")
+    unidade = int(unidade_input) if unidade_input else funcionario[8]
 
-        sql_update = """
-        UPDATE Funcionario
-        SET nome = %s, cargo = %s, salario = %s, cpf = %s, email_interno = %s,
-            numero_telefone = %s, data_nascimento = %s, unidade_de_trabalho = %s
-        WHERE codigo_funcionario = %s
-        """
+    sql_update = """
+    UPDATE Funcionario
+    SET nome = ?, cargo = ?, salario = ?, cpf = ?, email_interno = ?,
+        numero_telefone = ?, data_nascimento = ?, unidade_de_trabalho = ?
+    WHERE codigo_funcionario = ?
+    """
 
-        dados = (nome, cargo, salario, cpf, email, telefone, nascimento, unidade, codigo)
+    dados = (nome, cargo, salario, cpf, email, telefone, nascimento, unidade, codigo)
 
-        cursor.execute(sql_update, dados)
-        conn.commit()
+    cursor.execute(sql_update, dados)
+    conn.commit()
 
-        print("Funcionário atualizado com sucesso!")
+    print("Funcionário atualizado com sucesso!")
+    cursor.close()
 
-    except ValueError:
-        print("Entrada inválida. Certifique-se de digitar valores corretos.")
-    except mysql.connector.Error as err:
-        print(f"Erro ao atualizar funcionário: {err}")
-
-
-def deletar_funcionario():
+def deletar_funcionario(conn):
     cursor = conn.cursor()
-
     print("\n-- Deletar Funcionário --")
-    print("Atenção: Esta ação não pode ser desfeita.")
     codigo = int(input("Digite o código do funcionário a ser deletado: "))
-    cursor.execute("SELECT * FROM Funcionario WHERE codigo_funcionario = %s", (codigo,))
+    cursor.execute("SELECT * FROM Funcionario WHERE codigo_funcionario = ?", (codigo,))
     funcionario = cursor.fetchone()
 
     if funcionario:
-        cursor.execute("DELETE FROM Funcionario WHERE codigo_funcionario = %s", (codigo,))
+        cursor.execute("DELETE FROM Funcionario WHERE codigo_funcionario = ?", (codigo,))
         conn.commit()
         print("Funcionário deletado com sucesso.")
     else:
@@ -314,8 +240,7 @@ def deletar_funcionario():
     
     cursor.close()
 
-
-def inserir_medicamento():
+def inserir_medicamento(conn):
     cursor = conn.cursor()
     print("\n-- Inserir Medicamento --")
 
@@ -325,10 +250,9 @@ def inserir_medicamento():
     preco = float(input("Preço (ex: 19.99): "))
     qtde_estoque = int(input("Quantidade em estoque (ex: 1 ou 55): "))
             
-
     sql = """
     INSERT INTO Medicamento (nome, descricao, laboratorio, preco, qtde_estoque)
-    VALUES (%s, %s, %s, %s, %s)
+    VALUES (?, ?, ?, ?, ?)
     """
 
     dados = (nome, descricao, laboratorio, preco, qtde_estoque)
@@ -337,18 +261,16 @@ def inserir_medicamento():
         cursor.execute(sql, dados)
         conn.commit()
         print("Medicamento inserido com sucesso. Código:", cursor.lastrowid)
-    except mysql.connector.Error as err:
+    except sqlite3.Error as err:
         print(f"Erro ao inserir medicamento: {err}")
 
     cursor.close()
 
-
-def consultar_medicamento():
+def consultar_medicamento(conn):
     cursor = conn.cursor()
-    
     print("\n-- Consultar Medicamento --")
     codigo = int(input("ID do medicamento a ser consultado: "))
-    sql = "SELECT * FROM Medicamento WHERE codigo_medicamento = %s"
+    sql = "SELECT * FROM Medicamento WHERE codigo_medicamento = ?"
     cursor.execute(sql, (codigo,))
     resultado = cursor.fetchone()  
 
@@ -357,7 +279,7 @@ def consultar_medicamento():
         print(f"Código: {resultado[0]}")
         print(f"Nome: {resultado[1]}")
         print(f"Descrição: {resultado[2]}")
-        print(f"Laboratorio: {resultado[3]}")
+        print(f"Laboratório: {resultado[3]}")
         print(f"Preço: R$ {resultado[4]}")
         print(f"Quantidade no estoque: {resultado[5]}")
     else:
@@ -365,7 +287,7 @@ def consultar_medicamento():
 
     cursor.close()
 
-def listar_medicamentos():
+def listar_medicamentos(conn):
     cursor = conn.cursor()
     print("\n-- Listar Medicamentos --")
     sql = "SELECT * FROM Medicamento"
@@ -376,54 +298,47 @@ def listar_medicamentos():
             print(f"\nCódigo: {medicamento[0]}")
             print(f"Nome: {medicamento[1]}")
             print(f"Descrição: {medicamento[2]}")
-            print(f"Laboratorio: {medicamento[3]}")
+            print(f"Laboratório: {medicamento[3]}")
             print(f"Preço: R$ {medicamento[4]:.2f}")
             print(f"Quantidade no estoque: {medicamento[5]}")
     else:
-         print("Nenhum medicamento encontrado.")
-
-def atualizar_estoque_medicamento():
-    print("\n-- Atualizar Estoque de Medicamento --")
-
-    try:
-        codigo = int(input("Digite o código do medicamento: "))
-        cursor = conn.cursor()
-        sql_select = "SELECT nome, qtde_estoque FROM Medicamento WHERE codigo_medicamento = %s"
-        cursor.execute(sql_select, (codigo,))
-        medicamento = cursor.fetchone()
-
-        if not medicamento:
-            print("Medicamento não encontrado.")
-            return
-
-        print(f"Medicamento: {medicamento[0]}")
-        print(f"Estoque atual: {medicamento[1]}")
-        nova_qtde = int(input("Nova quantidade em estoque: "))
-           
-
-        sql_update = "UPDATE Medicamento SET qtde_estoque = %s WHERE codigo_medicamento = %s"
-        cursor.execute(sql_update, (nova_qtde, codigo))
-        conn.commit()
-
-        print("Estoque atualizado com sucesso!")
-
-    except ValueError:
-        print("Código inválido.")
-    except mysql.connector.Error as err:
-        print(f"Erro ao atualizar o estoque: {err}")
+        print("Nenhum medicamento encontrado.")
 
     cursor.close()
 
+def atualizar_estoque_medicamento(conn):
+    cursor = conn.cursor()
+    print("\n-- Atualizar Estoque de Medicamento --")
 
-def deletar_medicamento():
+    codigo = int(input("Digite o código do medicamento: "))
+    sql_select = "SELECT nome, qtde_estoque FROM Medicamento WHERE codigo_medicamento = ?"
+    cursor.execute(sql_select, (codigo,))
+    medicamento = cursor.fetchone()
+
+    if not medicamento:
+        print("Medicamento não encontrado.")
+        return
+
+    print(f"Medicamento: {medicamento[0]}")
+    print(f"Estoque atual: {medicamento[1]}")
+    nova_qtde = int(input("Nova quantidade em estoque: "))
+           
+    sql_update = "UPDATE Medicamento SET qtde_estoque = ? WHERE codigo_medicamento = ?"
+    cursor.execute(sql_update, (nova_qtde, codigo))
+    conn.commit()
+
+    print("Estoque atualizado com sucesso!")
+    cursor.close()
+
+def deletar_medicamento(conn):
     cursor = conn.cursor()
     print("\n-- Deletar Medicamento --")
     codigo = int(input("Digite o código do medicamento a ser deletado: "))
-    cursor.execute("SELECT * FROM Medicamento WHERE codigo_medicamento = %s", (codigo,))
+    cursor.execute("SELECT * FROM Medicamento WHERE codigo_medicamento = ?", (codigo,))
     med = cursor.fetchone()
 
     if med:
-        cursor.execute("DELETE FROM Medicamento WHERE codigo_medicamento = %s", (codigo,))
+        cursor.execute("DELETE FROM Medicamento WHERE codigo_medicamento = ?", (codigo,))
         conn.commit()
         print("Medicamento deletado com sucesso.")
     else:
@@ -431,8 +346,7 @@ def deletar_medicamento():
     
     cursor.close()
 
-
-def inserir_entrega_medicamentos():
+def inserir_entrega_medicamentos(conn):
     cursor = conn.cursor()
     print("\n-- Inserir nova entrega --")
     nome = input("Nome do destinatário: ")
@@ -449,7 +363,7 @@ def inserir_entrega_medicamentos():
         nome_destinatario, endereco_destinatario, telefone_destinatario,
         total_compra, status, data_pedido_gerado,
         funcionario_responsavel, unidade_responsavel
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
     dados_entrega = (nome, endereco, telefone, total, status, data_gerado, funcionario, unidade)
     cursor.execute(sql_entrega, dados_entrega)
@@ -458,7 +372,6 @@ def inserir_entrega_medicamentos():
     id_entrega = cursor.lastrowid
     print(f"\nEntrega inserida com sucesso! Código gerado: {id_entrega}")
 
-
     while True:
         print("\n-- Vincular medicamento à entrega --")
         codigo_medicamento = int(input("Código do medicamento: "))
@@ -466,7 +379,7 @@ def inserir_entrega_medicamentos():
 
         sql_medicamento_entrega = """
         INSERT INTO Medicamento_Entrega (codigo_medicamento, codigo_entrega, quantidade)
-        VALUES (%s, %s, %s)
+        VALUES (?, ?, ?)
         """
         cursor.execute(sql_medicamento_entrega, (codigo_medicamento, id_entrega, quantidade))
         conn.commit()
@@ -477,65 +390,47 @@ def inserir_entrega_medicamentos():
             break
 
     print("Entrega finalizada com medicamentos adicionados.")
-    
     cursor.close()
 
-def consultar_entrega():
+def consultar_entrega(conn):
+    cursor = conn.cursor()
     print("\n-- Consultar Entrega --")
-    try:
-        codigo = int(input("Digite o código da entrega: "))
-        
-        cursor = conn.cursor(dictionary=True)
+    codigo = int(input("Digite o código da entrega: "))
+    
+    cursor.execute("SELECT * FROM Entrega WHERE codigo_entrega = ?", (codigo,))
+    entrega = cursor.fetchone()
 
-        cursor.execute("SELECT * FROM Entrega WHERE codigo_entrega = %s", (codigo,))
-        entrega = cursor.fetchone()
+    if not entrega:
+        print("Entrega não encontrada.")
+        return
 
-        if not entrega:
-            print("Entrega não encontrada.")
-            return
+    print(f"\nCódigo da entrega: {entrega[0]}")
+    print(f"Destinatário: {entrega[1]}")
+    print(f"Endereço: {entrega[2]}")
+    print(f"Telefone: {entrega[3]}")
+    print(f"Total da compra: R$ {entrega[4]:.2f}")
+    print(f"Status: {entrega[5]}")
+    print(f"Data do pedido gerado: {entrega[6]}")
+    
+    cursor.execute("""
+        SELECT me.quantidade, m.nome
+        FROM Medicamento_Entrega me
+        JOIN Medicamento m ON me.codigo_medicamento = m.codigo_medicamento
+        WHERE me.codigo_entrega = ?
+    """, (codigo,))
+    medicamentos = cursor.fetchall()
 
-        print(f"\nCódigo da entrega: {entrega['codigo_entrega']}")
-        print(f"Destinatário: {entrega['nome_destinatario']}")
-        print(f"Endereço: {entrega['endereco_destinatario']}")
-        print(f"Telefone: {entrega['telefone_destinatario']}")
-        print(f"Total da compra: R$ {entrega['total_compra']:.2f}")
-        print(f"Status: {entrega['status']}")
-        print(f"Data do pedido gerado: {entrega['data_pedido_gerado']}")
-        print(f"Data de saída: {entrega['data_pedido_entregue']}")
-        
-        if entrega['data_pedido_entregue']:
-            print(f"Data de entrega: {entrega['data_pedido_entregue']}")
-        else:
-            print("Data de entrega: Pendente")
+    if medicamentos:
+        print("\nMedicamentos:")
+        for med in medicamentos:
+            print(f" - {med[1]} (Quantidade: {med[0]})")
+    else:
+        print("\nNenhum medicamento registrado nesta entrega.")
 
-        print(f"Funcionário responsável (ID): {entrega['funcionario_responsavel']}")
-        print(f"Unidade responsável (ID): {entrega['unidade_responsavel']}")
+    cursor.close()
 
-        cursor.execute("""
-            SELECT me.quantidade, m.nome
-            FROM Medicamento_Entrega me
-            JOIN Medicamento m ON me.codigo_medicamento = m.codigo_medicamento
-            WHERE me.codigo_entrega = %s
-        """, (codigo,))
-        medicamentos = cursor.fetchall()
-
-        if medicamentos:
-            print("\nMedicamentos:")
-            for med in medicamentos:
-                print(f" - {med['nome']} (Quantidade: {med['quantidade']})")
-        else:
-            print("\nNenhum medicamento registrado nesta entrega.")
-
-        cursor.close()
-
-    except ValueError:
-        print("Código inválido.")
-    except mysql.connector.Error as err:
-        print(f"Erro ao consultar entrega: {err}")
-
-
-def listar_entregas():
-    cursor = conn.cursor(dictionary=True)  # <-- aqui!
+def listar_entregas(conn):
+    cursor = conn.cursor()
     print("\n-- Lista de Entregas com Medicamentos --")
     
     cursor.execute("SELECT * FROM Entrega")
@@ -546,80 +441,58 @@ def listar_entregas():
         return
 
     for entrega in entregas:
-        print("\n===============================")
-        print(f"Código da entrega: {entrega['codigo_entrega']}")
-        print(f"Destinatário: {entrega['nome_destinatario']}")
-        print(f"Endereço: {entrega['endereco_destinatario']}")
-        print(f"Telefone: {entrega['telefone_destinatario']}")
-        print(f"Total da compra: R$ {entrega['total_compra']:.2f}")
-        print(f"Status: {entrega['status']}")
-        print(f"Data do pedido gerado: {entrega['data_pedido_gerado']}")
-        if entrega['data_pedido_entregue']:
-            print(f"Data de entrega: {entrega['data_pedido_entregue']}")
-        else:
-            print("Data de entrega: Pendente")
-        print(f"Funcionário responsável (ID): {entrega['funcionario_responsavel']}")
-        print(f"Unidade responsável (ID): {entrega['unidade_responsavel']}")
+        print(f"\nCódigo da entrega: {entrega[0]}")
+        print(f"Destinatário: {entrega[1]}")
+        print(f"Endereço: {entrega[2]}")
+        print(f"Telefone: {entrega[3]}")
+        print(f"Total da compra: R$ {entrega[4]:.2f}")
+        print(f"Status: {entrega[5]}")
+        print(f"Data do pedido gerado: {entrega[6]}")
 
         cursor.execute("""
             SELECT me.quantidade, m.nome
             FROM Medicamento_Entrega me
             JOIN Medicamento m ON me.codigo_medicamento = m.codigo_medicamento
-            WHERE me.codigo_entrega = %s
-        """, (entrega['codigo_entrega'],))
+            WHERE me.codigo_entrega = ?
+        """, (entrega[0],))
         medicamentos = cursor.fetchall()
 
         if medicamentos:
-            print("\n  Medicamentos:")
+            print("\nMedicamentos:")
             for med in medicamentos:
-                print(f"   - {med['nome']} (Quantidade: {med['quantidade']})")
+                print(f" - {med[1]} (Quantidade: {med[0]})")
         else:
-            print("  Nenhum medicamento registrado nesta entrega.")
+            print("Nenhum medicamento registrado nesta entrega.")
     
     cursor.close()
 
-
-def atualizar_status_entrega():
+def atualizar_status_entrega(conn):
     cursor = conn.cursor()
     print("\n-- Atualizar Status de Entrega --")
     codigo = int(input("\nDigite o código da entrega a ser atualizada: "))
     novo_status = input("\nDigite o novo status: ")
-    if novo_status == "entregue":
-        print("\nA entrega foi marcada como entregue.")
-        print("\nInforme a data de entrega (YYYY-MM-DD HH:MM:SS): ")
-        data_pedido_entregue = input()
-        cursor.execute("UPDATE Entrega SET status = %s, data_pedido_entregue = %s WHERE codigo_entrega = %s", (novo_status, data_pedido_entregue, codigo))
-    elif novo_status == "cancelada":
-        print("\nA entrega foi cancelada.")
-        cursor.execute("UPDATE Entrega SET status = %s, WHERE codigo_entrega = %s", (novo_status, codigo))
-    else:
-        cursor.execute("UPDATE Entrega SET status = %s WHERE codigo_entrega = %s", (novo_status, codigo))
+    
+    cursor.execute("UPDATE Entrega SET status = ? WHERE codigo_entrega = ?", (novo_status, codigo))
     conn.commit()
     print("Status atualizado com sucesso.")
     cursor.close()
 
-def deletar_entrega():
+def deletar_entrega(conn):
     cursor = conn.cursor()
     print("\n-- Deletar Entrega --")
-
     try:
         codigo = int(input("Digite o código da entrega que deseja deletar: "))
 
-        cursor.execute("DELETE FROM Medicamento_Entrega WHERE codigo_entrega = %s", (codigo,))
-
-        cursor.execute("DELETE FROM Entrega WHERE codigo_entrega = %s", (codigo,))
+        cursor.execute("DELETE FROM Medicamento_Entrega WHERE codigo_entrega = ?", (codigo,))
+        cursor.execute("DELETE FROM Entrega WHERE codigo_entrega = ?", (codigo,))
         conn.commit()
 
         print("Entrega deletada com sucesso!")
-
-    except mysql.connector.Error as err:
-        print(f"Erro ao deletar entrega: {err}")
     except ValueError:
         print("Código inválido.")
-
     cursor.close()
 
-def deletar_medicamento_entrega():
+def deletar_medicamento_entrega(conn):
     cursor = conn.cursor()
     cod_entrega = int(input("Código da entrega: "))
     cod_medicamento = int(input("Código do medicamento: "))
@@ -628,50 +501,57 @@ def deletar_medicamento_entrega():
 
     cursor.execute("""
         DELETE FROM Medicamento_Entrega
-        WHERE codigo_entrega = %s AND codigo_medicamento = %s
+        WHERE codigo_entrega = ? AND codigo_medicamento = ?
     """, (cod_entrega, cod_medicamento))
     conn.commit()
     print("Remoção realizada (se existia).")
     cursor.close()
 
-def inserir_unidade():
+def inserir_unidade(conn):
     cursor = conn.cursor()
     print("\n-- Inserir Unidade --")
     endereco = input("Endereço da unidade: ")
     cep = input("CEP (xxxxx-xxx): ")
 
-    sql = "INSERT INTO Unidade (endereco, cep) VALUES (%s, %s)"
+    sql = "INSERT INTO Unidade (endereco, cep) VALUES (?, ?)"
     cursor.execute(sql, (endereco, cep))
     conn.commit()
     print("Unidade inserida com sucesso. Código:", cursor.lastrowid)
     cursor.close()
 
-def listar_unidades():
+def listar_unidades(conn):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM Unidade")
     unidades = cursor.fetchall()
 
     if unidades:
         for u in unidades:
-             print(f"\nCódigo: {u[0]}, Endereço: {u[1]}, CEP: {u[2]}")
+            print(f"\nCódigo: {u[0]}, Endereço: {u[1]}, CEP: {u[2]}")
     else:
         print("Nenhuma unidade encontrada.")
 
     cursor.close()
 
-def deletar_unidade():
+def deletar_unidade(conn):
     cursor = conn.cursor()
     print("\n-- Deletar Unidade --")
     codigo = int(input("Digite o código da unidade a ser deletada: "))
-    cursor.execute("SELECT * FROM Unidade WHERE codigo_unidade = %s", (codigo,))
+    cursor.execute("SELECT * FROM Unidade WHERE codigo_unidade = ?", (codigo,))
     unidade = cursor.fetchone()
 
     if unidade:
-        cursor.execute("DELETE FROM Unidade WHERE codigo_unidade = %s", (codigo,))
+        cursor.execute("DELETE FROM Unidade WHERE codigo_unidade = ?", (codigo,))
         conn.commit()
         print("Unidade deletada com sucesso.")
     else:
         print("Unidade não encontrada.")
     cursor.close()
 
-menu()
+def main():
+    database = "Farmauni.db" 
+    conn = criar_conexao(database)
+    menu(conn)
+    fechar_conexao(conn)
+
+if __name__ == '__main__':
+    main()
